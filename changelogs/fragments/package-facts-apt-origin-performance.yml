@@ -1,0 +1,2 @@
+minor_changes:
+  - package_facts - the ``apt`` manager no longer builds a python-apt ``Origin`` object per package file when collecting a package's origin, which avoids a ``find_index()`` scan over the source list for a value that is then discarded. Collection time on a host with 3228 installed packages across 36 apt indexes drops from roughly 4.7s to 0.65s.

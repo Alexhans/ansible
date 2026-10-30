@@ -323,7 +323,10 @@ class APT(RespawningLibMgr):
 
     def get_package_details(self, package):
         ac_pkg = self.pkg_cache[package].installed
-        return dict(name=package, version=ac_pkg.version, arch=ac_pkg.architecture, category=ac_pkg.section, origin=ac_pkg.origins[0].origin)
+        # Read origin off the package file directly, as ac_pkg.origins builds an Origin per file for an unused .trusted, which is very slow
+        file_list = ac_pkg._cand.file_list
+        return dict(name=package, version=ac_pkg.version, arch=ac_pkg.architecture, category=ac_pkg.section,
+                    origin=file_list[0][0].origin if file_list else None)
 
 
 class PACMAN(CLIMgr):

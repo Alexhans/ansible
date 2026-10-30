@@ -14,6 +14,19 @@
       assert:
         that: ansible_facts.packages is defined
 
+    - name: check apt packages report the keys the apt manager collects
+      vars:
+        apt_pkgs: "{{ ansible_facts.packages.values() | flatten | selectattr('source', 'eq', 'apt') | list }}"
+      assert:
+        that:
+          - apt_pkgs | length > 0
+          - apt_pkgs | rejectattr('name', 'defined') | list | length == 0
+          - apt_pkgs | rejectattr('version', 'defined') | list | length == 0
+          - apt_pkgs | rejectattr('arch', 'defined') | list | length == 0
+          - apt_pkgs | rejectattr('category', 'defined') | list | length == 0
+          - apt_pkgs | rejectattr('origin', 'defined') | list | length == 0
+        fail_msg: "apt manager returned packages missing one of name/version/arch/category/origin"
+
     - name: Now try again but installing misleading rpm
       block:
         - name: install misleading rpm
